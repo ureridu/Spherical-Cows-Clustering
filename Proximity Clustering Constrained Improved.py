@@ -12,6 +12,7 @@ import timeit
 import pandas
 import numpy
 import scipy
+from scipy import spatial
 from geopy.distance import vincenty
 import operator
 import datetime
@@ -75,7 +76,7 @@ for row in stores.itertuples():
 zip_coords = all_zip.as_matrix(columns=['Lat', 'Long'])
 store_coords = stores.as_matrix(columns=['Lat', 'Long'])
 
-dist_mat = pandas.DataFrame(scipy.spatial.distance.cdist(zip_coords, store_coords), columns=stores['Store Number'])
+dist_mat = pandas.DataFrame(spatial.distance.cdist(zip_coords, store_coords), columns=stores['Store Number'])
 
 cur_time = datetime.datetime.now()
 print('\nDistance Matrix Complete', cur_time - prev_time)
