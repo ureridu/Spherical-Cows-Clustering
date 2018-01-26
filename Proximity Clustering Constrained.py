@@ -12,10 +12,12 @@ import timeit
 import pandas
 import numpy
 import scipy
+from scipy import spatial
 from geopy.distance import vincenty
 import operator
 import datetime
 from operator import itemgetter
+import os
 
 
 min_in_cluster = 1
@@ -27,13 +29,12 @@ timer_start = datetime.datetime.now()
 prev_time = timer_start
 
 #path = r'C:\Users\skowalski\Documents\Inventory Scrapes\Auxillary/'
-path = r'C:\Users\skowalski\Documents\Inventory Scrapes\Auxillary/'
+path = os.getcwd()
 
 #stores_in = pandas.read_excel(path + 'Walmart Stores.xlsx')
-stores_in = pandas.read_excel(r'C:\Users\skowalski\Desktop\Best Buy Store Info3.xlsx')
-#all_zip_in = pandas.read_excel(r'C:\Users\skowalski\Desktop\Best Buy Store Info2.xlsx')
+stores_in = pandas.read_excel(path + '/Shark THing.xlsx')
 
-with open(path + '2015_Gaz_zcta_national.txt', 'r') as infile:
+with open(path + '/2015_Gaz_zcta_national.txt', 'r') as infile:
     zips = infile.read()
 
 #    *GEOID, ALAND, AWATER, ALAND_SQMI, AWATER_SQMI, INTPTLAT, INTPTLONG = infile.read().split(' ')
@@ -82,7 +83,7 @@ for row in stores.itertuples():
 zip_coords = all_zip.as_matrix(columns=['Lat', 'Long'])
 store_coords = stores.as_matrix(columns=['Lat', 'Long'])
 
-dist_mat = pandas.DataFrame(scipy.spatial.distance.cdist(zip_coords, store_coords), columns=stores['Store Number'])
+dist_mat = pandas.DataFrame(spatial.distance.cdist(zip_coords, store_coords), columns=stores['Store Number'])
 
 cur_time = datetime.datetime.now()
 print('\nDistance Matrix Complete', cur_time - prev_time)
