@@ -16,6 +16,7 @@ from geopy.distance import vincenty
 import operator
 import datetime
 from operator import itemgetter
+import os
 
 
 min_in_cluster = 1
@@ -26,12 +27,12 @@ radius = 100
 timer_start = datetime.datetime.now()
 prev_time = timer_start
 
-path = r'C:\Users\skowalski\Documents\Inventory Scrapes\Auxillary/'
+path = os.getcwd()
 
 #stores_in = pandas.read_excel(path + 'Walmart Stores.xlsx')
-stores_in = pandas.read_excel(r'C:\Users\skowalski\Documents\Useful Files\Home Depot All Stores.xlsx')
+stores_in = pandas.read_excel(path + '/Shark THing.xlsx')
 
-with open(path + '2015_Gaz_zcta_national.txt', 'r') as infile:
+with open(path + '/2015_Gaz_zcta_national.txt', 'r') as infile:
     zips = infile.read()
 
     #*GEOID, ALAND, AWATER, ALAND_SQMI, AWATER_SQMI, INTPTLAT, INTPTLONG = infile.read().split(' ')
