@@ -122,19 +122,20 @@ clust_dict = {x: 0 for x in clust_set}
 all_stores = set(stores['Store Number'])
 clust_lookup = {store: [] for store in all_stores}
 
-for i, row in enumerate(cluster_list):
-    for store in row[1]:
+
+cluster_list = pandas.DataFrame(cluster_list, columns=['Cluster', 'Items', 'Uniqueness'])
+cluster_list.set_index('Cluster', inplace=True, drop=True)
+
+for row in cluster_list.itertuples():
+    for store in row.Items:
         clust_dict[store] += 1
-        clust_lookup[store].append(i)
+        clust_lookup[store].append(row.Index)
 
 clust_sums = {x[0]: 0 for x in cluster_list}
 
 cur_time = datetime.datetime.now()
 print('\nPrep Work Complete', cur_time - prev_time)
 prev_time = cur_time
-
-cluster_list = pandas.DataFrame(cluster_list, columns=['Cluster', 'Items', 'Uniqueness'])
-cluster_list.set_index('Cluster', inplace=True, drop=True)
 
 protected = set()
 to_update = list(cluster_list.index)
@@ -158,7 +159,7 @@ while run:
         
     clust_tree = BST(list(cluster_list['Uniqueness']), list(cluster_list.index))
     sorted_list = reversed(clust_tree.listify())
-    print('sorted')
+
 
     to_update = set()
     altered_stores = set([])
@@ -171,18 +172,18 @@ while run:
             for store in row.Items:
                 clust_dict[store] -= 1
                 altered_stores.add(store)
-                clust_lookup[store].remove(i)
+                clust_lookup[store].remove(item.name)
                 to_update.update(clust_lookup[store])
                 
 #            ind = (i + 1 - num_del) * (-1)
 #            ind = i
 #            print(i, ind, clust[0], cluster_list[ind][0])
             cluster_list.drop(item.name, inplace=True)
-            clust_tree.snip_node(clust_tree.node_ref[row.Cluster])
+            clust_tree.snip_node(clust_tree.node_ref[item.name])
             num_del += 1
             break
-    to_update = [int(x) for x in to_update]
-    break
+    to_update = [str(int(x)) for x in to_update]
+    
 count = 0
 count_included = 0
 dup = 0

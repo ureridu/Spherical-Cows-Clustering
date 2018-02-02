@@ -4,7 +4,7 @@ Created on Sun Jan 28 03:02:57 2018
 
 @author: Ureridu
 """
-import time
+# handle first node deletion
 
 class BST():
     first_node = None
@@ -82,7 +82,7 @@ class BST():
 
             sub_node.right = node.right
 
-        else:
+        elif node.right:
             ''' If there is not left node, life is great. We just snip out the node and shift the right node up
                 no need to for any other shifting '''
             if node.value < node.parent.value:
