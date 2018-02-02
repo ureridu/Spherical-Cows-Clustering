@@ -25,6 +25,7 @@ class BST():
 
     ''' This function iterates through the tree- left to right, and builds a sorted list '''
     def __recursive_search__(self, node, sorted_list):
+        print(node.name)
         if node.left:
             sorted_list = self.__recursive_search__(node.left, sorted_list)
         sorted_list.append(node)
@@ -67,7 +68,20 @@ class BST():
     ''' This function is used to delete nodes.  Basic form is that we connect the left child node to the appropriate
     leg of the parent, and set right child node to the furthest right leg of the left child- Thus removing the node from the tree '''
     def snip_node(self, node):
-        if node.left:
+        ' Removing the first node is a special case, as it has no parent node. '
+        if node is self.first_node:
+            if node.left:
+                self.first_node = node.left
+                
+                sub_node = node.left
+                while sub_node.right:
+                    sub_node = sub_node.right
+                sub_node.right = node.right
+            
+            elif node.right:
+                self.first_node = node.right
+            
+        elif node.left:
             ' Only real difference is which leg of the parent we connect to '
             if node.value < node.parent.value:
                 node.parent.left = node.left
@@ -76,11 +90,13 @@ class BST():
             ' update the parent of the replacement node '
             node.left.parent = node.parent
             ' And run down the right leg until we find the end.  Then we dump the old right leg there'
-            sub_node = node.left
-            while sub_node.right:
-                sub_node = sub_node.right
+            if node.right:
+                sub_node = node.left
+                while sub_node.right:
+                    sub_node = sub_node.right
 
-            sub_node.right = node.right
+                sub_node.right = node.right
+                node.right.parent = sub_node
 
         elif node.right:
             ''' If there is not left node, life is great. We just snip out the node and shift the right node up
@@ -90,9 +106,17 @@ class BST():
             else:
                 node.parent.right = node.right
             node.right.parent = node.parent
+            
+        else:
+            'Handles the Tree End Case, were node is a final node '
+            if node.value < node.parent.value:
+                node.parent.left = None
+            else:
+                node.parent.right = None
 
-            del self.node_ref[node.name]
-            del node
+        del self.node_ref[node.name]
+        del node
+
 
     ''' Sometimes it's just nice to have an ordered list. For, like, iterating and stuff
     a start node can be specified, allowing for partial lists'''
@@ -101,6 +125,20 @@ class BST():
             start_node = self.first_node
         sorted_list = self.__recursive_search__(start_node, [])
         return sorted_list
+    
+    def max_node(self):
+        node = self.first_node
+        while node.right:
+            node = node.right
+            
+        return node
+    
+    def min_node(self):
+        node = self.first_node
+        while node.left:
+            node = node.left
+            
+        return node
 
     ''' This is the node class. Nodes have it. Are it. Truth
     Implemented as a sub-class of the tree because all nodes should belong to a tree
@@ -140,21 +178,29 @@ class BST():
 
 
 #
-#test = {}
-#ar = [ 8, 5, 9, 2, 3, 1, 0, 0, 4, 7, 23, 3, 75, 54, 98, 6, -3, 1000, -2]
-#nr = ['node_'+str(x) for x in ar]
-#'      -3, -2, 0, 0, 1, 2, 3, 3, 4, 5, 6, 7, 8, 9, 23, 54, 75, 98, 1000 '
+test = {}
+ar = [ 8, 5, 9, 2, 3, 1, 0, 4, 7, 23, 75, 54, 98, 6, -3, 1000, -2]
+nr = ['node_'+str(x) for x in ar]
+'      -3, -2, 0, 0, 1, 2, 3, 3, 4, 5, 6, 7, 8, 9, 23, 54, 75, 98, 1000 '
+
+tree = BST(ar, nr)
+l = tree.listify()
+
+
+l = tree.listify()
+out = [x.value for x in l]
+print(out)
+
+print(tree.min_node().name)
+print(tree.max_node().name)
 #
-#tree = BST(ar, nr)
-#l = tree.listify()
+#for x in l:
+#    print(x.value)
+#    tree.snip_node(tree.node_ref[x.name])
+##tree.snip_node(tree.node_ref['node_1000'])
 #
-#print(l[4].value)
-#print(l[4].parent.value)
-#tree.snip_node(l[4])
-#tree.snip_node(l[5])
-#tree.snip_node(l[9])
-#print(l[4].value)
-#print(l[4].parent.left.value)
+#
+#
 #
 #
 #l = tree.listify()

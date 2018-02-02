@@ -118,8 +118,9 @@ cur_time = datetime.datetime.now()
 print('\nForced Clustering Complete', cur_time - prev_time)
 prev_time = cur_time
 
-clust_dict = {x: 0 for x in clust_set}
+
 all_stores = set(stores['Store Number'])
+clust_dict = {x: 0 for x in all_stores}
 clust_lookup = {store: [] for store in all_stores}
 
 
@@ -138,7 +139,9 @@ print('\nPrep Work Complete', cur_time - prev_time)
 prev_time = cur_time
 
 protected = set()
-to_update = list(cluster_list.index)
+to_update = set(list(cluster_list.index))
+clust_tree = BST(list(cluster_list['Uniqueness']), list(cluster_list.index))
+S
 run = 1
 while run:
     run = None
@@ -156,9 +159,13 @@ while run:
         cluster_list.set_value(clust, 'Uniqueness', sums/(len(clust[1])))
 
 #    cluster_list.sort_values('Uniqueness', ascending=False, inplace=True)
-        
-    clust_tree = BST(list(cluster_list['Uniqueness']), list(cluster_list.index))
-    sorted_list = reversed(clust_tree.listify())
+
+    for node in [x for x in to_update]:
+        clust_tree.snip_node(clust_tree.node_ref[node])
+        clust_tree.add_node(cluster_list.loc[node, 'Uniqueness'], node)
+    sorted_list = list(reversed(clust_tree.listify()))
+    print('sorted')
+    print(len(sorted_list))
 
 
     to_update = set()
