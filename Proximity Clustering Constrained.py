@@ -21,7 +21,7 @@ import os
 
 
 min_in_cluster = 1
-max_in_cluster = 20
+max_in_cluster = 21
 unique_in_cluster = 1
 radius = 99
 

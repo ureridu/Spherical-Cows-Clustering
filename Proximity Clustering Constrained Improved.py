@@ -8,7 +8,7 @@ import timeit
 
 #print(timeit.timeit(r'''
 
-
+from tree_sort import BST
 import pandas
 import numpy
 import scipy
@@ -134,13 +134,15 @@ print('\nPrep Work Complete', cur_time - prev_time)
 prev_time = cur_time
 
 cluster_list = pandas.DataFrame(cluster_list, columns=['Cluster', 'Items', 'Uniqueness'])
+cluster_list.set_index('Cluster', inplace=True, drop=True)
+
 protected = set()
-to_update = list(range(0, len(cluster_list)))
+to_update = list(cluster_list.index)
 run = 1
 while run:
     run = None
-    for i in to_update:
-        clust, stores, _ = cluster_list.loc[i, :]
+    for clust in to_update:
+        stores, _ = cluster_list.loc[clust, :]
         sums = 0
         unique_stores = 0
         for store in stores:
@@ -150,17 +152,21 @@ while run:
 
         if unique_stores >= unique_in_cluster:
             protected.add(clust)
-        cluster_list.set_value(i, 'Uniqueness', sums/(len(clust[1])))
+        cluster_list.set_value(clust, 'Uniqueness', sums/(len(clust[1])))
 
-    cluster_list.sort_values('Uniqueness', ascending=False, inplace=True)
+#    cluster_list.sort_values('Uniqueness', ascending=False, inplace=True)
+        
+    clust_tree = BST(list(cluster_list['Uniqueness']), list(cluster_list.index))
+    sorted_list = reversed(clust_tree.listify())
+    print('sorted')
 
     to_update = set()
     altered_stores = set([])
     num_del = 0
-    for row in cluster_list.itertuples():
-        i = row.Index
+    for item in sorted_list:
+        row = cluster_list.loc[item.name]
 #    for i, clust in enumerate(cluster_list):
-        if row.Cluster not in protected and not any(x in altered_stores for x in row.Items):
+        if item.name not in protected and not any(x in altered_stores for x in row.Items):
             run = 1
             for store in row.Items:
                 clust_dict[store] -= 1
@@ -171,11 +177,12 @@ while run:
 #            ind = (i + 1 - num_del) * (-1)
 #            ind = i
 #            print(i, ind, clust[0], cluster_list[ind][0])
-            cluster_list.drop(i, inplace=True)
+            cluster_list.drop(item.name, inplace=True)
+            clust_tree.snip_node(clust_tree.node_ref[row.Cluster])
             num_del += 1
             break
     to_update = [int(x) for x in to_update]
-
+    break
 count = 0
 count_included = 0
 dup = 0
